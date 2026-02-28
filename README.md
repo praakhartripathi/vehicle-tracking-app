@@ -3,6 +3,7 @@
 This repository contains a small full-stack vehicle tracking feature with:
 
 - Node.js + Express backend API
+- PostgreSQL database
 - Flutter frontend with 2 simple screens:
   - Vehicle list
   - Vehicle details with status toggle (active/inactive)
@@ -19,10 +20,26 @@ Path: `backend`
 - `POST /api/vehicles`
 - `PATCH /api/vehicles/:id/status`
 
-### Run
+### Setup
+
+1. Create a PostgreSQL database (example: `vehicle_tracking`)
+2. Run migration:
+
+```bash
+psql -U <user> -d vehicle_tracking -f database/schema.sql
+```
+
+3. Configure backend env:
 
 ```bash
 cd backend
+cp .env.example .env
+# update DATABASE_URL if needed
+```
+
+4. Install and run:
+
+```bash
 npm install
 npm start
 ```
@@ -73,20 +90,17 @@ Designed for PostgreSQL. It supports current needs (vehicle master + active/inac
 - Uses append-only history tables for traceability.
 - Allows easy extension to alerts, trips, and driver assignment later.
 
-### Migration Order
+## API-DB Mapping
 
-```bash
-psql -U <user> -d <database> -f database/schema.sql
+- API `id` maps to DB `vehicles.code` (example `V001`).
+- Internal numeric DB key is `vehicles.id`.
+
+Example API response:
+
+```json
+{
+  "id": "V001",
+  "name": "Truck Alpha",
+  "status": "active"
+}
 ```
-
-### Seed data
-
-`schema.sql` includes starter records for two vehicles so the frontend works immediately after backend DB integration.
-
-## Current Backend Storage
-
-Right now backend uses in-memory mock data in:
-
-- `backend/src/data/vehicles.js`
-
-You can replace this with PostgreSQL using the schema above (next step).
